@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+#
+# jt-tags: top\u2010level coordinator for tag\u2010related subcommands
+#
+
+if [ $# -lt 1 ]; then
+  echo "Usage: jt tags {add|rm|list|rename|mv} [args...]" >&2
+  exit 1
+fi
+
+SUB="$1"
+shift
+
+case "$SUB" in
+  add)
+    exec jt-tags-add "$@"
+    ;;
+  rm)
+    exec jt-tags-rm "$@"
+    ;;
+  list)
+    exec jt-tags-list "$@"
+    ;;
+  rename)
+    exec jt-tags-rename "$@"
+    ;;
+  mv)
+    exec jt-tags-mv "$@"
+    ;;
+  *)
+    echo "Unknown jt-tags command: $SUB. Use one of: add, rm, list, rename, mv." >&2
+    exit 1
+    ;;
+esac
+
