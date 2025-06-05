@@ -76,7 +76,7 @@ def main():
     argv = sys.argv
     argc = len(argv)
 
-    # Expect: jt-tags-add <token> <name>
+    # Expect: jt tags add <token> <name>
     if argc != 3:
         print(
             "Usage:\n"

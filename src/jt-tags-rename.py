@@ -44,7 +44,7 @@ def save_db(data):
 def main():
     if len(sys.argv) != 3:
         print(
-            "Usage: jt-tags-rename <AC | AC.ID | AC.ID+EXT> <new-name>",
+            "Usage: jt tags rename <AC | AC.ID | AC.ID+EXT> <new-name>",
             file=sys.stderr
         )
         sys.exit(1)
