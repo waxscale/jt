@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import sys
 import json
@@ -31,7 +30,7 @@ def load_vault_path():
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: jt-tags-cd <AC.ID+EXT>", file=sys.stderr)
+        print("Usage: jt tags cd <AC.ID+EXT>", file=sys.stderr)
         sys.exit(1)
 
     token = sys.argv[1].strip()
