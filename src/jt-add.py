@@ -4,22 +4,17 @@ import json
 import re
 import subprocess
 
-# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-# Configuration & Paths
-# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
 DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
 CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
 DEFAULT_VAULT = "/mnt/nas"
 
-# ANSI colors (TokyoNight Dark)
 COLOR_RESET = "\033[0m"
-COLOR_EXT   = "\033[38;5;175m"  # pink-ish for EXT entries
-COLOR_DIR   = "\033[38;5;141m"  # purple-ish for folder line
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 
-ICON_TAG = "\uf02b"   # \uf02b
-ICON_DIR = "\uf07b"   # \uf73b
+ICON_TAG = "\uf02b"
+ICON_DIR = "\uf07b"
 
-# Regex validators
 RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 RE_ID      = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
 RE_EXT     = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
@@ -68,9 +63,6 @@ def save_db(data):
     json.dump(data, f, indent=2)
 
 def build_choices(data):
-  """
-  Return list of strings "[tag] name" for each ID and each EXT.
-  """
   choices = []
   for id_tag, info in data["id"].items():
     name = info.get("name", "")
@@ -81,9 +73,6 @@ def build_choices(data):
   return sorted(choices)
 
 def run_fzf(choices):
-  """
-  Run fzf on the provided choices. Return the selected line, or None.
-  """
   try:
     p = subprocess.Popen(
       ["fzf", "--ansi", "--prompt=Select tag: "],
@@ -102,9 +91,6 @@ def run_fzf(choices):
   return stdout.strip()
 
 def extract_token(line):
-  """
-  From a string "[token] name", return token.
-  """
   if not line.startswith("["):
     return None
   end = line.find("]")
@@ -113,10 +99,6 @@ def extract_token(line):
   return line[1:end]
 
 def next_ext_for_id(id_tag, data):
-  """
-  Given ID "XX.YY", find highest existing "XX.YY+ZZZZ" in data["ext"],
-  then return "XX.YY+<next four-digit>".
-  """
   max_num = 0
   prefix = id_tag + "+"
   for ext_tag in data["ext"].keys():
@@ -159,22 +141,20 @@ def main():
     print("Error: could not parse selection.", file=sys.stderr)
     sys.exit(1)
 
-  # If token is EXT, add this dir to ext["dirs"]
   if RE_EXT.match(token):
     ext_info = data["ext"].get(token)
     if ext_info is None:
       print(f"Error: EXT '{token}' not found.", file=sys.stderr)
       sys.exit(1)
 
-    # Remove from any old dirs if present
     old_dirs = ext_info.get("dirs", [])
     for old_dir in list(old_dirs):
       if old_dir == dir_id:
         print(f"EXT '{token}' already assigned to {dir_id}.", file=sys.stderr)
         sys.exit(0)
-    # Append to this dir
+
     ext_info.setdefault("dirs", []).append(dir_id)
-    # Ensure dir entry exists
+
     if dir_id not in data["dir"]:
       data["dir"][dir_id] = {"ext": [], "name": data["dir"].get(dir_id, {}).get("name", "")}
     if token not in data["dir"][dir_id]["ext"]:
@@ -189,7 +169,6 @@ def main():
     )
     sys.exit(0)
 
-  # If token is ID, generate new EXT under that ID and assign to dir
   if RE_ID.match(token):
     id_tag = token
     if id_tag not in data["id"]:
@@ -197,7 +176,6 @@ def main():
       sys.exit(1)
     new_ext = next_ext_for_id(id_tag, data)
 
-    # Prompt for name with gum
     try:
       proc = subprocess.run(
         ["gum", "input", "--placeholder", "Name (optional)"],
@@ -210,9 +188,8 @@ def main():
     except FileNotFoundError:
       name = ""
 
-    # Create new ext entry with dirs list
     data["ext"][new_ext] = {"name": name, "dirs": [dir_id]}
-    # Ensure dir entry exists
+
     if dir_id not in data["dir"]:
       data["dir"][dir_id] = {"ext": [], "name": data["dir"].get(dir_id, {}).get("name", "")}
     data["dir"][dir_id]["ext"].append(new_ext)

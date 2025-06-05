@@ -10,7 +10,7 @@ COLOR_AC    = "\033[38;5;75m"
 COLOR_ID    = "\033[38;5;107m"
 COLOR_EXT   = "\033[38;5;175m"
 
-ICON_TAG = "\uf02b"   # \uf02b
+ICON_TAG = "\uf02b"
 
 RE_AC     = re.compile(r"^[0-9]{2}$")
 RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
@@ -69,7 +69,7 @@ def rm_ext(ext_tag):
     print(f"Error: EXT '{ext_tag}' does not exist.", file=sys.stderr)
     sys.exit(1)
   ext_info = data["ext"][ext_tag]
-  # Remove this ext_tag from every directory in its "dirs" list
+
   for dir_id in ext_info.get("dirs", []):
     if dir_id in data["dir"]:
       data["dir"][dir_id]["ext"] = [

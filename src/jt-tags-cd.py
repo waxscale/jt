@@ -9,7 +9,6 @@ DEFAULT_VAULT = "/mnt/nas"
 
 RE_EXT = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
 
-
 def load_vault_path():
   vault = DEFAULT_VAULT
   try:
@@ -26,7 +25,6 @@ def load_vault_path():
   except FileNotFoundError:
     pass
   return vault
-
 
 def main():
   if len(sys.argv) != 2:
@@ -69,7 +67,6 @@ def main():
 
   vault = load_vault_path()
   print(os.path.join(vault, dir_id))
-
 
 if __name__ == "__main__":
   main()

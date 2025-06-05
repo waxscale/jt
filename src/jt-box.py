@@ -6,17 +6,15 @@ import sys
 DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
 DEFAULT_VAULT = "/mnt/nas"
 
-# ANSI colors (TokyoNight Dark)
-COLOR_EXT   = "\033[38;5;175m"  # pink-ish for EXT entries
-COLOR_DIR   = "\033[38;5;141m"  # purple-ish for directory lines
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 COLOR_RESET = "\033[0m"
 
-# Nerd Font icons (FiraCode Nerd Font)
-ICON_TAG = "\uf02b"  # \uf02b
-ICON_DIR = "\uf07b"  # \uf73b
+ICON_TAG = "\uf02b"
+ICON_DIR = "\uf07b"
 
 RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
-# Hardcoded ID
+
 ID_TAG     = "01.01"
 
 def load_db():
@@ -39,7 +37,6 @@ def load_db():
 def main():
   data = load_db()
 
-  # Collect all EXT tags under the hardcoded ID "01.01"
   ext_tags = sorted(
     [ext for ext in data["ext"].keys() if ext.startswith(f"{ID_TAG}+")]
   )
@@ -51,7 +48,6 @@ def main():
     ext_name = ext_info.get("name", "")
     print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {ext_name}{COLOR_RESET}")
 
-    # Use ext_info["dirs"] directly
     dirs_with_ext = ext_info.get("dirs", [])
     first_five = dirs_with_ext[:5]
 

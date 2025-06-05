@@ -9,11 +9,11 @@ CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
 DEFAULT_VAULT = "/mnt/nas"
 
 COLOR_RESET = "\033[0m"
-COLOR_EXT   = "\033[38;5;175m"  # pink-ish
-COLOR_DIR   = "\033[38;5;141m"  # purple-ish
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 
-ICON_TAG = "\uf02b"   # \uf02b
-ICON_DIR = "\uf07b"   # \uf73b
+ICON_TAG = "\uf02b"
+ICON_DIR = "\uf07b"
 
 RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 RE_EXT     = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
@@ -123,13 +123,11 @@ def main():
     print("Error: could not parse selection or EXT not found.", file=sys.stderr)
     sys.exit(1)
 
-  # Remove this dir from ext["dirs"]
   ext_info = data["ext"][token]
   dirs_list = ext_info.get("dirs", [])
   if dir_id in dirs_list:
     dirs_list.remove(dir_id)
 
-  # Remove EXT from this dir's "ext" list
   data["dir"][dir_id]["ext"] = [
     e for e in data["dir"][dir_id]["ext"] if e != token
   ]

@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-#
-# jt: top\u2010level coordinator
-#
 
 if [ $# -lt 1 ]; then
   echo "Usage: jt {add|ls|rm|rename|nav|box|append|tags} [args...]" >&2

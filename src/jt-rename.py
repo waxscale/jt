@@ -7,13 +7,12 @@ DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
 CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
 DEFAULT_VAULT = "/mnt/nas"
 
-# ANSI colors (TokyoNight Dark)
 COLOR_RESET = "\033[0m"
-COLOR_DIR   = "\033[38;5;141m"  # purple-ish
-COLOR_OK    = "\033[38;5;107m"  # green-ish
-COLOR_ERR   = "\033[38;5;196m"  # red-ish
+COLOR_DIR   = "\033[38;5;141m"
+COLOR_OK    = "\033[38;5;107m"
+COLOR_ERR   = "\033[38;5;196m"
 
-ICON_DIR = "\uf07b"   # \uf73b
+ICON_DIR = "\uf07b"
 
 RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 
@@ -81,7 +80,6 @@ def main():
 
   data = load_db()
 
-  # If no entry exists, create one with empty ext list
   if dir_id not in data["dir"]:
     data["dir"][dir_id] = {"name": new_name, "ext": []}
     dir_entry = data["dir"][dir_id]

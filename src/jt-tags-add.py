@@ -6,15 +6,15 @@ import re
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"   # blue-ish for AC
-COLOR_ID    = "\033[38;5;107m"  # green-ish for ID
-COLOR_EXT   = "\033[38;5;175m"  # pink-ish for EXT
+COLOR_AC    = "\033[38;5;75m"
+COLOR_ID    = "\033[38;5;107m"
+COLOR_EXT   = "\033[38;5;175m"
 
-ICON_TAG = "\uf02b"  # \uf02b
+ICON_TAG = "\uf02b"
 
-RE_AC  = re.compile(r"^[0-9]{2}$")                     # \u201cXX\u201d
-RE_ID  = re.compile(r"^[0-9]{2}\.[0-9]{2}$")           # \u201cXX.YY\u201d
-RE_EXT = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$") # \u201cXX.YY+ZZZZ\u201d
+RE_AC  = re.compile(r"^[0-9]{2}$")
+RE_ID  = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
+RE_EXT = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
 
 def load_db():
   default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
@@ -76,7 +76,6 @@ def main():
   argv = sys.argv
   argc = len(argv)
 
-  # Expect: jt tags add <token> <name>
   if argc != 3:
     print(
       "Usage:\n"

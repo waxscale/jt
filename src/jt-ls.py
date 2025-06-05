@@ -7,16 +7,14 @@ DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
 CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
 DEFAULT_VAULT = "/mnt/nas"
 
-# ANSI colors (TokyoNight Dark)
-COLOR_AC    = "\033[38;5;75m"   # blue-ish for AC labels
-COLOR_ID    = "\033[38;5;107m"  # green-ish for ID names in parentheses
-COLOR_EXT   = "\033[38;5;175m"  # pink-ish for EXT entries
-COLOR_DIR   = "\033[38;5;141m"  # purple-ish for folder line
+COLOR_AC    = "\033[38;5;75m"
+COLOR_ID    = "\033[38;5;107m"
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 COLOR_RESET = "\033[0m"
 
-# Nerd Font icons (FiraCode Nerd Font)
-ICON_TAG = "\uf02b"   # \uf02b
-ICON_DIR = "\uf07b"   # \uf73b
+ICON_TAG = "\uf02b"
+ICON_DIR = "\uf07b"
 
 RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 RE_EXT_TAG = re.compile(r"^([0-9]{2})\.([0-9]{2})\+([0-9]{4})$")
@@ -88,20 +86,17 @@ def main():
   dir_entry = data["dir"].get(dir_id, {})
   dir_name  = dir_entry.get("name", "")
 
-  # Print folder line
   if dir_name:
     print(f"{COLOR_DIR}{ICON_DIR} {dir_name}{COLOR_RESET}")
   else:
     print(f"{COLOR_DIR}{ICON_DIR} {dir_id}{COLOR_RESET}")
 
-  # Collect EXT tags for this dir (check membership in "dirs" list)
   ext_tags = [
     ext_tag
     for ext_tag, ext_info in data["ext"].items()
     if dir_id in ext_info.get("dirs", [])
   ]
 
-  # Group EXT by AC
   group_map = {}
   for ext in ext_tags:
     m = RE_EXT_TAG.match(ext)
@@ -110,7 +105,6 @@ def main():
     ac_id = m.group(1)
     group_map.setdefault(ac_id, []).append(ext)
 
-  # Determine AC keys to display
   ac_keys = sorted(data["ac"].keys()) if show_all else sorted(group_map.keys())
 
   for ac_id in ac_keys:

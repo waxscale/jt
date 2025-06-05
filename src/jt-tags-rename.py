@@ -6,13 +6,13 @@ import re
 DB_PATH     = os.path.expanduser("~/.cache/jdex/jt.json")
 
 COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"   # blue-ish
-COLOR_ID    = "\033[38;5;107m"  # green-ish
-COLOR_EXT   = "\033[38;5;175m"  # pink-ish
-COLOR_DIR   = "\033[38;5;141m"  # purple-ish
+COLOR_AC    = "\033[38;5;75m"
+COLOR_ID    = "\033[38;5;107m"
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 
-ICON_TAG   = "\uf02b"   # \uf02b
-ICON_DIR   = "\uf07b"   # \uf73b
+ICON_TAG   = "\uf02b"
+ICON_DIR   = "\uf07b"
 
 RE_AC     = re.compile(r"^[0-9]{2}$")
 RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
@@ -53,7 +53,6 @@ def main():
   new_name = sys.argv[2].strip()
   data = load_db()
 
-  # AC-level rename
   if RE_AC.match(fragment):
     ac_id = fragment
     if ac_id not in data["ac"]:
@@ -64,7 +63,6 @@ def main():
     print(f"{COLOR_AC}{ICON_TAG} [{ac_id}] {new_name}{COLOR_RESET}")
     return
 
-  # ID-level rename
   if RE_ID.match(fragment):
     id_tag = fragment
     if id_tag not in data["id"]:
@@ -75,7 +73,6 @@ def main():
     print(f"{COLOR_ID}{ICON_TAG} [{id_tag}] {new_name}{COLOR_RESET}")
     return
 
-  # EXT-level rename
   if RE_EXT.match(fragment):
     ext_tag = fragment
     if ext_tag not in data["ext"]:
