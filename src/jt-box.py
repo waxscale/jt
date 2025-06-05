@@ -20,54 +20,54 @@ RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 ID_TAG     = "01.01"
 
 def load_db():
-    default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
-    if not os.path.exists(DB_PATH):
-        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-        with open(DB_PATH, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-    with open(DB_PATH, "r") as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError:
-            data = default
-    for k in default:
-        if k not in data:
-            data[k] = {}
-    return data
+  default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
+  if not os.path.exists(DB_PATH):
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    with open(DB_PATH, "w") as f:
+      json.dump(default, f, indent=2)
+    return default
+  with open(DB_PATH, "r") as f:
+    try:
+      data = json.load(f)
+    except json.JSONDecodeError:
+      data = default
+  for k in default:
+    if k not in data:
+      data[k] = {}
+  return data
 
 def main():
-    data = load_db()
+  data = load_db()
 
-    # Collect all EXT tags under the hardcoded ID "01.01"
-    ext_tags = sorted(
-        [ext for ext in data["ext"].keys() if ext.startswith(f"{ID_TAG}+")]
-    )
-    if not ext_tags:
-        sys.exit(0)
+  # Collect all EXT tags under the hardcoded ID "01.01"
+  ext_tags = sorted(
+    [ext for ext in data["ext"].keys() if ext.startswith(f"{ID_TAG}+")]
+  )
+  if not ext_tags:
+    sys.exit(0)
 
-    for ext_tag in ext_tags:
-        ext_info = data["ext"][ext_tag]
-        ext_name = ext_info.get("name", "")
-        print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {ext_name}{COLOR_RESET}")
+  for ext_tag in ext_tags:
+    ext_info = data["ext"][ext_tag]
+    ext_name = ext_info.get("name", "")
+    print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {ext_name}{COLOR_RESET}")
 
-        # Use ext_info["dirs"] directly
-        dirs_with_ext = ext_info.get("dirs", [])
-        first_five = dirs_with_ext[:5]
+    # Use ext_info["dirs"] directly
+    dirs_with_ext = ext_info.get("dirs", [])
+    first_five = dirs_with_ext[:5]
 
-        for dir_id in first_five:
-            if RE_DIR_ID.match(dir_id):
-                dir_name = data["dir"].get(dir_id, {}).get("name", "")
-                print(f"  {COLOR_DIR}{ICON_DIR} [{dir_id}] {dir_name}{COLOR_RESET}")
+    for dir_id in first_five:
+      if RE_DIR_ID.match(dir_id):
+        dir_name = data["dir"].get(dir_id, {}).get("name", "")
+        print(f"  {COLOR_DIR}{ICON_DIR} [{dir_id}] {dir_name}{COLOR_RESET}")
 
-        total = len(dirs_with_ext)
-        if total > 5:
-            print("  +more")
-        else:
-            for _ in range(5 - len(first_five)):
-                print("  -")
-            print("  -")
+    total = len(dirs_with_ext)
+    if total > 5:
+      print("  +more")
+    else:
+      for _ in range(5 - len(first_five)):
+        print("  -")
+      print("  -")
 
 if __name__ == "__main__":
-    main()
+  main()
 

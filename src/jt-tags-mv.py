@@ -21,180 +21,180 @@ RE_EXT = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
 RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 
 def load_db():
-    default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
-    if not os.path.exists(DB_PATH):
-        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-        with open(DB_PATH, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-    with open(DB_PATH, "r") as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError:
-            data = default
-    for k in ("ac", "id", "ext", "dir"):
-        if k not in data:
-            data[k] = {}
-    return data
+  default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
+  if not os.path.exists(DB_PATH):
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    with open(DB_PATH, "w") as f:
+      json.dump(default, f, indent=2)
+    return default
+  with open(DB_PATH, "r") as f:
+    try:
+      data = json.load(f)
+    except json.JSONDecodeError:
+      data = default
+  for k in ("ac", "id", "ext", "dir"):
+    if k not in data:
+      data[k] = {}
+  return data
 
 def save_db(data):
-    with open(DB_PATH, "w") as f:
-        json.dump(data, f, indent=2)
+  with open(DB_PATH, "w") as f:
+    json.dump(data, f, indent=2)
 
 def mv_ac(old_ac, new_ac, data):
-    if new_ac in data["ac"]:
-        print(f"Error: AC '{new_ac}' already exists.", file=sys.stderr)
-        sys.exit(1)
-    # Move AC entry
-    ac_name = data["ac"][old_ac]["name"]
-    data["ac"][new_ac] = {"name": ac_name}
-    del data["ac"][old_ac]
+  if new_ac in data["ac"]:
+    print(f"Error: AC '{new_ac}' already exists.", file=sys.stderr)
+    sys.exit(1)
+  # Move AC entry
+  ac_name = data["ac"][old_ac]["name"]
+  data["ac"][new_ac] = {"name": ac_name}
+  del data["ac"][old_ac]
 
-    # Build mappings for ID and EXT
-    id_map = {}
-    for id_tag in list(data["id"].keys()):
-        if id_tag.startswith(f"{old_ac}."):
-            suffix = id_tag[len(old_ac):]  # e.g. ".11"
-            new_id = new_ac + suffix
-            id_map[id_tag] = new_id
+  # Build mappings for ID and EXT
+  id_map = {}
+  for id_tag in list(data["id"].keys()):
+    if id_tag.startswith(f"{old_ac}."):
+      suffix = id_tag[len(old_ac):]  # e.g. ".11"
+      new_id = new_ac + suffix
+      id_map[id_tag] = new_id
 
-    ext_map = {}
-    for ext_tag in list(data["ext"].keys()):
-        if ext_tag.startswith(f"{old_ac}."):
-            suffix = ext_tag[len(old_ac):]  # e.g. ".11+0001"
-            new_ext = new_ac + suffix
-            ext_map[ext_tag] = new_ext
+  ext_map = {}
+  for ext_tag in list(data["ext"].keys()):
+    if ext_tag.startswith(f"{old_ac}."):
+      suffix = ext_tag[len(old_ac):]  # e.g. ".11+0001"
+      new_ext = new_ac + suffix
+      ext_map[ext_tag] = new_ext
 
-    # Move ID entries
-    for old_id, new_id in id_map.items():
-        data["id"][new_id] = data["id"][old_id]
-        del data["id"][old_id]
-
-    # Move EXT entries
-    for old_ext, new_ext in ext_map.items():
-        data["ext"][new_ext] = data["ext"][old_ext]
-        del data["ext"][old_ext]
-
-    # Update dir\u2192ext lists
-    for dir_id, dir_entry in data["dir"].items():
-        updated = []
-        for e in dir_entry.get("ext", []):
-            updated.append(ext_map.get(e, e))
-        dir_entry["ext"] = updated
-
-    save_db(data)
-    print(f"{COLOR_AC}{ICON_TAG} [{new_ac}] {ac_name}{COLOR_RESET}")
-
-def mv_id(old_id, new_id, data):
-    old_ac = old_id.split(".")[0]
-    new_ac = new_id.split(".")[0]
-    if old_ac != new_ac:
-        print("Error: AC prefix must match when renaming ID.", file=sys.stderr)
-        sys.exit(1)
-    if new_id in data["id"]:
-        print(f"Error: ID '{new_id}' already exists.", file=sys.stderr)
-        sys.exit(1)
-    # Move ID entry
-    id_name = data["id"][old_id]["name"]
-    data["id"][new_id] = {"name": id_name}
+  # Move ID entries
+  for old_id, new_id in id_map.items():
+    data["id"][new_id] = data["id"][old_id]
     del data["id"][old_id]
 
-    # Build mapping for EXT under this ID
-    ext_map = {}
-    for ext_tag in list(data["ext"].keys()):
-        if ext_tag.startswith(f"{old_id}+"):
-            suffix = ext_tag[len(old_id):]  # e.g. "+0001"
-            new_ext = new_id + suffix
-            ext_map[ext_tag] = new_ext
-
-    # Move EXT entries
-    for old_ext, new_ext in ext_map.items():
-        data["ext"][new_ext] = data["ext"][old_ext]
-        del data["ext"][old_ext]
-
-    # Update dir\u2192ext lists
-    for dir_id, dir_entry in data["dir"].items():
-        updated = []
-        for e in dir_entry.get("ext", []):
-            updated.append(ext_map.get(e, e))
-        dir_entry["ext"] = updated
-
-    save_db(data)
-    print(f"{COLOR_ID}{ICON_TAG} [{new_id}] {id_name}{COLOR_RESET}")
-
-def mv_ext(old_ext, new_ext, data):
-    old_id = old_ext.split("+")[0]
-    new_id = new_ext.split("+")[0]
-    if old_id != new_id:
-        print("Error: ID prefix must match when renaming EXT.", file=sys.stderr)
-        sys.exit(1)
-    if new_ext in data["ext"]:
-        print(f"Error: EXT '{new_ext}' already exists.", file=sys.stderr)
-        sys.exit(1)
-    # Move EXT entry
-    ext_info = data["ext"][old_ext]
-    data["ext"][new_ext] = ext_info
+  # Move EXT entries
+  for old_ext, new_ext in ext_map.items():
+    data["ext"][new_ext] = data["ext"][old_ext]
     del data["ext"][old_ext]
 
-    # Update dir\u2192ext lists
-    for dir_id in ext_info.get("dirs", []):
-        exts = data["dir"].get(dir_id, {}).get("ext", [])
-        data["dir"][dir_id]["ext"] = [new_ext if e == old_ext else e for e in exts]
+  # Update dir\u2192ext lists
+  for dir_id, dir_entry in data["dir"].items():
+    updated = []
+    for e in dir_entry.get("ext", []):
+      updated.append(ext_map.get(e, e))
+    dir_entry["ext"] = updated
 
-    save_db(data)
-    name = ext_info.get("name", "")
-    dirs = ext_info.get("dirs", [])
-    if dirs:
-        for dir_id in dirs:
-            print(
-                f"{COLOR_DIR}{ICON_DIR} {dir_id} {LEFT_ARROW} "
-                f"{COLOR_EXT}{ICON_TAG} [{new_ext}] {name}{COLOR_RESET}"
-            )
-    else:
-        print(f"{COLOR_EXT}{ICON_TAG} [{new_ext}] {name}{COLOR_RESET}")
+  save_db(data)
+  print(f"{COLOR_AC}{ICON_TAG} [{new_ac}] {ac_name}{COLOR_RESET}")
+
+def mv_id(old_id, new_id, data):
+  old_ac = old_id.split(".")[0]
+  new_ac = new_id.split(".")[0]
+  if old_ac != new_ac:
+    print("Error: AC prefix must match when renaming ID.", file=sys.stderr)
+    sys.exit(1)
+  if new_id in data["id"]:
+    print(f"Error: ID '{new_id}' already exists.", file=sys.stderr)
+    sys.exit(1)
+  # Move ID entry
+  id_name = data["id"][old_id]["name"]
+  data["id"][new_id] = {"name": id_name}
+  del data["id"][old_id]
+
+  # Build mapping for EXT under this ID
+  ext_map = {}
+  for ext_tag in list(data["ext"].keys()):
+    if ext_tag.startswith(f"{old_id}+"):
+      suffix = ext_tag[len(old_id):]  # e.g. "+0001"
+      new_ext = new_id + suffix
+      ext_map[ext_tag] = new_ext
+
+  # Move EXT entries
+  for old_ext, new_ext in ext_map.items():
+    data["ext"][new_ext] = data["ext"][old_ext]
+    del data["ext"][old_ext]
+
+  # Update dir\u2192ext lists
+  for dir_id, dir_entry in data["dir"].items():
+    updated = []
+    for e in dir_entry.get("ext", []):
+      updated.append(ext_map.get(e, e))
+    dir_entry["ext"] = updated
+
+  save_db(data)
+  print(f"{COLOR_ID}{ICON_TAG} [{new_id}] {id_name}{COLOR_RESET}")
+
+def mv_ext(old_ext, new_ext, data):
+  old_id = old_ext.split("+")[0]
+  new_id = new_ext.split("+")[0]
+  if old_id != new_id:
+    print("Error: ID prefix must match when renaming EXT.", file=sys.stderr)
+    sys.exit(1)
+  if new_ext in data["ext"]:
+    print(f"Error: EXT '{new_ext}' already exists.", file=sys.stderr)
+    sys.exit(1)
+  # Move EXT entry
+  ext_info = data["ext"][old_ext]
+  data["ext"][new_ext] = ext_info
+  del data["ext"][old_ext]
+
+  # Update dir\u2192ext lists
+  for dir_id in ext_info.get("dirs", []):
+    exts = data["dir"].get(dir_id, {}).get("ext", [])
+    data["dir"][dir_id]["ext"] = [new_ext if e == old_ext else e for e in exts]
+
+  save_db(data)
+  name = ext_info.get("name", "")
+  dirs = ext_info.get("dirs", [])
+  if dirs:
+    for dir_id in dirs:
+      print(
+        f"{COLOR_DIR}{ICON_DIR} {dir_id} {LEFT_ARROW} "
+        f"{COLOR_EXT}{ICON_TAG} [{new_ext}] {name}{COLOR_RESET}"
+      )
+  else:
+    print(f"{COLOR_EXT}{ICON_TAG} [{new_ext}] {name}{COLOR_RESET}")
 
 def main():
-    if len(sys.argv) != 3:
-        print(
-            "Usage: jt tags mv <old-fragment> <new-fragment>",
-            file=sys.stderr
-        )
-        sys.exit(1)
-
-    old_frag = sys.argv[1].strip()
-    new_frag = sys.argv[2].strip()
-    data = load_db()
-
-    if RE_AC.match(old_frag) and RE_AC.match(new_frag):
-        if old_frag not in data["ac"]:
-            print(f"Error: AC '{old_frag}' does not exist.", file=sys.stderr)
-            sys.exit(1)
-        mv_ac(old_frag, new_frag, data)
-        return
-
-    if RE_ID.match(old_frag) and RE_ID.match(new_frag):
-        if old_frag not in data["id"]:
-            print(f"Error: ID '{old_frag}' does not exist.", file=sys.stderr)
-            sys.exit(1)
-        mv_id(old_frag, new_frag, data)
-        return
-
-    if RE_EXT.match(old_frag) and RE_EXT.match(new_frag):
-        if old_frag not in data["ext"]:
-            print(f"Error: EXT '{old_frag}' does not exist.", file=sys.stderr)
-            sys.exit(1)
-        mv_ext(old_frag, new_frag, data)
-        return
-
+  if len(sys.argv) != 3:
     print(
-        "Error: Both fragments must be the same level:\n"
-        "  \u2022 AC      \u2192 two digits   (e.g. 01 \u2192 02)\n"
-        "  \u2022 AC.ID   \u2192 XX.YY        (e.g. 01.01 \u2192 01.02)\n"
-        "  \u2022 AC.ID+E \u2192 XX.YY+ZZZZ   (e.g. 01.01+0001 \u2192 01.01+0002)",
-        file=sys.stderr
+      "Usage: jt tags mv <old-fragment> <new-fragment>",
+      file=sys.stderr
     )
     sys.exit(1)
 
+  old_frag = sys.argv[1].strip()
+  new_frag = sys.argv[2].strip()
+  data = load_db()
+
+  if RE_AC.match(old_frag) and RE_AC.match(new_frag):
+    if old_frag not in data["ac"]:
+      print(f"Error: AC '{old_frag}' does not exist.", file=sys.stderr)
+      sys.exit(1)
+    mv_ac(old_frag, new_frag, data)
+    return
+
+  if RE_ID.match(old_frag) and RE_ID.match(new_frag):
+    if old_frag not in data["id"]:
+      print(f"Error: ID '{old_frag}' does not exist.", file=sys.stderr)
+      sys.exit(1)
+    mv_id(old_frag, new_frag, data)
+    return
+
+  if RE_EXT.match(old_frag) and RE_EXT.match(new_frag):
+    if old_frag not in data["ext"]:
+      print(f"Error: EXT '{old_frag}' does not exist.", file=sys.stderr)
+      sys.exit(1)
+    mv_ext(old_frag, new_frag, data)
+    return
+
+  print(
+    "Error: Both fragments must be the same level:\n"
+    "  \u2022 AC      \u2192 two digits   (e.g. 01 \u2192 02)\n"
+    "  \u2022 AC.ID   \u2192 XX.YY        (e.g. 01.01 \u2192 01.02)\n"
+    "  \u2022 AC.ID+E \u2192 XX.YY+ZZZZ   (e.g. 01.01+0001 \u2192 01.01+0002)",
+    file=sys.stderr
+  )
+  sys.exit(1)
+
 if __name__ == "__main__":
-    main()
+  main()
 
