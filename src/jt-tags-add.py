@@ -2,15 +2,9 @@ import os
 import sys
 import json
 import re
+import jtconf
 
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
-
-COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"
-COLOR_ID    = "\033[38;5;107m"
-COLOR_EXT   = "\033[38;5;175m"
-
-ICON_TAG = "\uf02b"
 
 RE_AC  = re.compile(r"^[0-9]{2}$")
 RE_ID  = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
@@ -44,7 +38,7 @@ def add_ac(ac_id, name):
     sys.exit(1)
   data["ac"][ac_id] = {"name": name}
   save_db(data)
-  print(f"{COLOR_AC}{ICON_TAG} [{ac_id}] {name}{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_ac']}{jtconf.CONFIG['icon_tag']} [{ac_id}] {name}{jtconf.CONFIG['color_reset']}")
 
 def add_id(id_tag, name):
   data = load_db()
@@ -57,7 +51,7 @@ def add_id(id_tag, name):
     sys.exit(1)
   data["id"][id_tag] = {"name": name}
   save_db(data)
-  print(f"{COLOR_ID}{ICON_TAG} [{id_tag}] {name}{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_id']}{jtconf.CONFIG['icon_tag']} [{id_tag}] {name}{jtconf.CONFIG['color_reset']}")
 
 def add_ext(ext_tag, name):
   data = load_db()
@@ -70,7 +64,7 @@ def add_ext(ext_tag, name):
     sys.exit(1)
   data["ext"][ext_tag] = {"name": name}
   save_db(data)
-  print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {name}{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{ext_tag}] {name}{jtconf.CONFIG['color_reset']}")
 
 def main():
   argv = sys.argv

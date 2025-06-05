@@ -3,29 +3,11 @@ import sys
 import json
 import re
 import subprocess
+import jtconf
 
-CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
-DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
-DEFAULT_VAULT = "/mnt/nas"
+DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
-
-def load_vault_path():
-  vault = DEFAULT_VAULT
-  try:
-    with open(CONF_PATH, "r") as cf:
-      for line in cf:
-        line = line.strip()
-        if not line or line.startswith("#"):
-          continue
-        if "=" in line:
-          key, val = line.split("=", 1)
-          key, val = key.strip(), val.strip()
-          if key == "vault" and val:
-            vault = val.rstrip("/")
-  except FileNotFoundError:
-    pass
-  return vault
 
 def load_db():
   default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
@@ -66,7 +48,7 @@ def format_dir_id(num):
   return "_".join(s[i:i+4] for i in range(0, 16, 4))
 
 def main():
-  vault = load_vault_path()
+  vault = jtconf.CONFIG['vault']
   cwd = os.getcwd()
 
   if os.path.normpath(cwd) != os.path.normpath(vault):

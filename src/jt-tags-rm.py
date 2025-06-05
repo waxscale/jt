@@ -2,15 +2,9 @@ import os
 import sys
 import json
 import re
+import jtconf
 
-DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
-
-COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"
-COLOR_ID    = "\033[38;5;107m"
-COLOR_EXT   = "\033[38;5;175m"
-
-ICON_TAG = "\uf02b"
+DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 RE_AC     = re.compile(r"^[0-9]{2}$")
 RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
@@ -48,7 +42,7 @@ def rm_ac(ac_id):
     sys.exit(1)
   del data["ac"][ac_id]
   save_db(data)
-  print(f"{COLOR_AC}{ICON_TAG} [{ac_id}] removed{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_ac']}{jtconf.CONFIG['icon_tag']} [{ac_id}] removed{jtconf.CONFIG['color_reset']}")
 
 def rm_id(id_tag):
   data = load_db()
@@ -61,7 +55,7 @@ def rm_id(id_tag):
     sys.exit(1)
   del data["id"][id_tag]
   save_db(data)
-  print(f"{COLOR_ID}{ICON_TAG} [{id_tag}] removed{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_id']}{jtconf.CONFIG['icon_tag']} [{id_tag}] removed{jtconf.CONFIG['color_reset']}")
 
 def rm_ext(ext_tag):
   data = load_db()
@@ -79,7 +73,7 @@ def rm_ext(ext_tag):
         del data["dir"][dir_id]
   del data["ext"][ext_tag]
   save_db(data)
-  print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] removed{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{ext_tag}] removed{jtconf.CONFIG['color_reset']}")
 
 def main():
   if len(sys.argv) != 2:

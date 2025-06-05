@@ -2,16 +2,9 @@ import os
 import json
 import re
 import sys
+import jtconf
 
-DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
-DEFAULT_VAULT = "/mnt/nas"
-
-COLOR_EXT   = "\033[38;5;175m"
-COLOR_DIR   = "\033[38;5;141m"
-COLOR_RESET = "\033[0m"
-
-ICON_TAG = "\uf02b"
-ICON_DIR = "\uf07b"
+DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 
@@ -46,7 +39,9 @@ def main():
   for ext_tag in ext_tags:
     ext_info = data["ext"][ext_tag]
     ext_name = ext_info.get("name", "")
-    print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {ext_name}{COLOR_RESET}")
+    print(
+      f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{ext_tag}] {ext_name}{jtconf.CONFIG['color_reset']}"
+    )
 
     dirs_with_ext = ext_info.get("dirs", [])
     first_five = dirs_with_ext[:5]
@@ -54,7 +49,9 @@ def main():
     for dir_id in first_five:
       if RE_DIR_ID.match(dir_id):
         dir_name = data["dir"].get(dir_id, {}).get("name", "")
-        print(f"  {COLOR_DIR}{ICON_DIR} [{dir_id}] {dir_name}{COLOR_RESET}")
+        print(
+          f"  {jtconf.CONFIG['color_dir']}{jtconf.CONFIG['icon_dir']} [{dir_id}] {dir_name}{jtconf.CONFIG['color_reset']}"
+        )
 
     total = len(dirs_with_ext)
     if total > 5:

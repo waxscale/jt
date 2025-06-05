@@ -2,18 +2,9 @@ import os
 import sys
 import json
 import re
+import jtconf
 
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
-
-COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"
-COLOR_ID    = "\033[38;5;107m"
-COLOR_EXT   = "\033[38;5;175m"
-COLOR_DIR   = "\033[38;5;141m"
-
-ICON_TAG  = "\uf02b"
-ICON_DIR  = "\uf07b"
-LEFT_ARROW = f"{COLOR_EXT}\u2190{COLOR_RESET}"
 
 RE_AC  = re.compile(r"^[0-9]{2}$")
 RE_ID  = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
@@ -79,7 +70,7 @@ def mv_ac(old_ac, new_ac, data):
     dir_entry["ext"] = updated
 
   save_db(data)
-  print(f"{COLOR_AC}{ICON_TAG} [{new_ac}] {ac_name}{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_ac']}{jtconf.CONFIG['icon_tag']} [{new_ac}] {ac_name}{jtconf.CONFIG['color_reset']}")
 
 def mv_id(old_id, new_id, data):
   old_ac = old_id.split(".")[0]
@@ -113,7 +104,7 @@ def mv_id(old_id, new_id, data):
     dir_entry["ext"] = updated
 
   save_db(data)
-  print(f"{COLOR_ID}{ICON_TAG} [{new_id}] {id_name}{COLOR_RESET}")
+  print(f"{jtconf.CONFIG['color_id']}{jtconf.CONFIG['icon_tag']} [{new_id}] {id_name}{jtconf.CONFIG['color_reset']}")
 
 def mv_ext(old_ext, new_ext, data):
   old_id = old_ext.split("+")[0]
@@ -139,11 +130,11 @@ def mv_ext(old_ext, new_ext, data):
   if dirs:
     for dir_id in dirs:
       print(
-        f"{COLOR_DIR}{ICON_DIR} {dir_id} {LEFT_ARROW} "
-        f"{COLOR_EXT}{ICON_TAG} [{new_ext}] {name}{COLOR_RESET}"
+        f"{jtconf.CONFIG['color_dir']}{jtconf.CONFIG['icon_dir']} {dir_id} {jtconf.CONFIG['color_ext']}\u2190{jtconf.CONFIG['color_reset']} "
+        f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{new_ext}] {name}{jtconf.CONFIG['color_reset']}"
       )
   else:
-    print(f"{COLOR_EXT}{ICON_TAG} [{new_ext}] {name}{COLOR_RESET}")
+    print(f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{new_ext}] {name}{jtconf.CONFIG['color_reset']}")
 
 def main():
   if len(sys.argv) != 3:
