@@ -8,33 +8,34 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
+SCRIPT_DIR="$(dirname "$0")"
 COMMAND="$1"
 shift
 
 case "$COMMAND" in
   add)
-    exec jt-add "$@"
+    exec python3 "$SCRIPT_DIR/jt-add.py" "$@"
     ;;
   ls)
-    exec jt-ls "$@"
+    exec python3 "$SCRIPT_DIR/jt-ls.py" "$@"
     ;;
   rm)
-    exec jt-rm "$@"
+    exec python3 "$SCRIPT_DIR/jt-rm.py" "$@"
     ;;
   rename)
-    exec jt-rename "$@"
+    exec python3 "$SCRIPT_DIR/jt-rename.py" "$@"
     ;;
   nav)
-    exec jt-nav "$@"
+    exec python3 "$SCRIPT_DIR/jt-nav.py" "$@"
     ;;
   box)
-    exec jt-box
+    exec python3 "$SCRIPT_DIR/jt-box.py"
     ;;
   append)
-    exec jt-append
+    exec python3 "$SCRIPT_DIR/jt-append.py"
     ;;
   tags)
-    exec jt-tags "$@"
+    exec "$SCRIPT_DIR/jt-tags" "$@"
     ;;
   *)
     echo "Unknown command: $COMMAND. Use one of: add, ls, rm, rename, nav, box, append, tags." >&2

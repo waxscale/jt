@@ -1,4 +1,3 @@
-#!/home/jaguar/.pyenv/versions/3.13.3/envs/jdex/bin/python
 import os
 import json
 import re
