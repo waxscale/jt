@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+#
+# jt: top\u2010level coordinator
+#
+
+if [ $# -lt 1 ]; then
+  echo "Usage: jt {add|ls|rm|rename|nav|box|append|tags} [args...]" >&2
+  exit 1
+fi
+
+COMMAND="$1"
+shift
+
+case "$COMMAND" in
+  add)
+    exec jt-add "$@"
+    ;;
+  ls)
+    exec jt-ls "$@"
+    ;;
+  rm)
+    exec jt-rm "$@"
+    ;;
+  rename)
+    exec jt-rename "$@"
+    ;;
+  nav)
+    exec jt-nav "$@"
+    ;;
+  box)
+    exec jt-box
+    ;;
+  append)
+    exec jt-append
+    ;;
+  tags)
+    exec jt-tags "$@"
+    ;;
+  *)
+    echo "Unknown command: $COMMAND. Use one of: add, ls, rm, rename, nav, box, append, tags." >&2
+    exit 1
+    ;;
+esac
+
