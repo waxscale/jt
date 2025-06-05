@@ -90,7 +90,7 @@ def main():
     sys.exit(1)
 
   data = load_db()
-  # Collect EXT tags where current dir appears in the "dirs" list
+
   ext_tags = [
     ext_tag for ext_tag, ext_info in data["ext"].items()
     if dir_id in ext_info.get("dirs", [])
@@ -99,7 +99,6 @@ def main():
     print(f"No tags refer to this directory ({dir_id}).")
     sys.exit(0)
 
-  # Build choices "[EXT] name"
   choices = []
   for ext_tag in sorted(ext_tags):
     name = data["ext"][ext_tag].get("name", "")

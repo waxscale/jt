@@ -6,13 +6,13 @@ import re
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"    # blue-ish for AC
-COLOR_ID    = "\033[38;5;107m"   # green-ish for ID
-COLOR_EXT   = "\033[38;5;175m"   # pink-ish for EXT
-COLOR_DIR   = "\033[38;5;141m"   # purple-ish for DIR
+COLOR_AC    = "\033[38;5;75m"
+COLOR_ID    = "\033[38;5;107m"
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 
-ICON_TAG  = "\uf02b"   # \uf02b
-ICON_DIR  = "\uf07b"   # \uf73b
+ICON_TAG  = "\uf02b"
+ICON_DIR  = "\uf07b"
 LEFT_ARROW = f"{COLOR_EXT}\u2190{COLOR_RESET}"
 
 RE_AC  = re.compile(r"^[0-9]{2}$")
@@ -45,37 +45,33 @@ def mv_ac(old_ac, new_ac, data):
   if new_ac in data["ac"]:
     print(f"Error: AC '{new_ac}' already exists.", file=sys.stderr)
     sys.exit(1)
-  # Move AC entry
+
   ac_name = data["ac"][old_ac]["name"]
   data["ac"][new_ac] = {"name": ac_name}
   del data["ac"][old_ac]
 
-  # Build mappings for ID and EXT
   id_map = {}
   for id_tag in list(data["id"].keys()):
     if id_tag.startswith(f"{old_ac}."):
-      suffix = id_tag[len(old_ac):]  # e.g. ".11"
+      suffix = id_tag[len(old_ac):]
       new_id = new_ac + suffix
       id_map[id_tag] = new_id
 
   ext_map = {}
   for ext_tag in list(data["ext"].keys()):
     if ext_tag.startswith(f"{old_ac}."):
-      suffix = ext_tag[len(old_ac):]  # e.g. ".11+0001"
+      suffix = ext_tag[len(old_ac):]
       new_ext = new_ac + suffix
       ext_map[ext_tag] = new_ext
 
-  # Move ID entries
   for old_id, new_id in id_map.items():
     data["id"][new_id] = data["id"][old_id]
     del data["id"][old_id]
 
-  # Move EXT entries
   for old_ext, new_ext in ext_map.items():
     data["ext"][new_ext] = data["ext"][old_ext]
     del data["ext"][old_ext]
 
-  # Update dir\u2192ext lists
   for dir_id, dir_entry in data["dir"].items():
     updated = []
     for e in dir_entry.get("ext", []):
@@ -94,25 +90,22 @@ def mv_id(old_id, new_id, data):
   if new_id in data["id"]:
     print(f"Error: ID '{new_id}' already exists.", file=sys.stderr)
     sys.exit(1)
-  # Move ID entry
+
   id_name = data["id"][old_id]["name"]
   data["id"][new_id] = {"name": id_name}
   del data["id"][old_id]
 
-  # Build mapping for EXT under this ID
   ext_map = {}
   for ext_tag in list(data["ext"].keys()):
     if ext_tag.startswith(f"{old_id}+"):
-      suffix = ext_tag[len(old_id):]  # e.g. "+0001"
+      suffix = ext_tag[len(old_id):]
       new_ext = new_id + suffix
       ext_map[ext_tag] = new_ext
 
-  # Move EXT entries
   for old_ext, new_ext in ext_map.items():
     data["ext"][new_ext] = data["ext"][old_ext]
     del data["ext"][old_ext]
 
-  # Update dir\u2192ext lists
   for dir_id, dir_entry in data["dir"].items():
     updated = []
     for e in dir_entry.get("ext", []):
@@ -131,12 +124,11 @@ def mv_ext(old_ext, new_ext, data):
   if new_ext in data["ext"]:
     print(f"Error: EXT '{new_ext}' already exists.", file=sys.stderr)
     sys.exit(1)
-  # Move EXT entry
+
   ext_info = data["ext"][old_ext]
   data["ext"][new_ext] = ext_info
   del data["ext"][old_ext]
 
-  # Update dir\u2192ext lists
   for dir_id in ext_info.get("dirs", []):
     exts = data["dir"].get(dir_id, {}).get("ext", [])
     data["dir"][dir_id]["ext"] = [new_ext if e == old_ext else e for e in exts]

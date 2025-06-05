@@ -6,19 +6,19 @@ import re
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"    # blue-ish for AC
-COLOR_ID    = "\033[38;5;107m"   # green-ish for ID
-COLOR_EXT   = "\033[38;5;175m"   # pink-ish for EXT
-COLOR_DIR   = "\033[38;5;141m"   # purple-ish for DIR
+COLOR_AC    = "\033[38;5;75m"
+COLOR_ID    = "\033[38;5;107m"
+COLOR_EXT   = "\033[38;5;175m"
+COLOR_DIR   = "\033[38;5;141m"
 
-ICON_TAG  = "\uf02b"   # \uf02b
-ICON_DIR  = "\uf07b"   # \uf73b
+ICON_TAG  = "\uf02b"
+ICON_DIR  = "\uf07b"
 LEFT_ARROW = f"{COLOR_EXT}\u2190{COLOR_RESET}"
 
-RE_AC     = re.compile(r"^[0-9]{2}$")                       # \u201cXX\u201d
-RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")             # \u201cXX.YY\u201d
-RE_EXT    = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")   # \u201cXX.YY+ZZZZ\u201d
-RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")        # \u201c0000_0000_0000_0000\u201d
+RE_AC     = re.compile(r"^[0-9]{2}$")
+RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
+RE_EXT    = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
+RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 
 def load_db():
   default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
@@ -50,14 +50,14 @@ def print_ext(ext_tag, data, indent=4, show_dir=False):
   name     = ext_info["name"]
   print(" " * indent + f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {name}{COLOR_RESET}")
   if show_dir:
-    # Gather directories and sort by directory name
+
     dirs_list = ext_info.get("dirs", [])
     dir_entries = []
     for dir_id in dirs_list:
       dir_entry = data["dir"].get(dir_id, {})
       dir_name  = dir_entry.get("name", "")
       dir_entries.append((dir_id, dir_name))
-    # sort alphabetically by dir_name
+
     dir_entries.sort(key=lambda x: x[1].lower())
     for dir_id, dir_name in dir_entries:
       print(" " * (indent + 2) +

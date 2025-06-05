@@ -4,10 +4,6 @@ import json
 import re
 import subprocess
 
-# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-# jt-append: create a new sequential directory under the vault and set its name
-# \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
-
 CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
 DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
 DEFAULT_VAULT = "/mnt/nas"
@@ -73,18 +69,15 @@ def main():
   vault = load_vault_path()
   cwd = os.getcwd()
 
-  # Must run in the vault base directory
   if os.path.normpath(cwd) != os.path.normpath(vault):
     print(f"Error: jt append must be run in vault base ({vault}).", file=sys.stderr)
     sys.exit(1)
 
-  # List existing directories matching the pattern
   existing = [
     name for name in os.listdir(vault)
     if os.path.isdir(os.path.join(vault, name)) and RE_DIR_ID.match(name)
   ]
 
-  # Compute next number
   if existing:
     nums = [int(name.replace("_", "")) for name in existing]
     new_num = max(nums) + 1
@@ -94,17 +87,14 @@ def main():
   new_dir_id = format_dir_id(new_num)
   new_path = os.path.join(vault, new_dir_id)
 
-  # Prompt for name
   name = prompt_name()
 
-  # Create directory
   try:
     os.makedirs(new_path, exist_ok=False)
   except Exception as e:
     print(f"Error creating directory '{new_dir_id}': {e}", file=sys.stderr)
     sys.exit(1)
 
-  # Update JSON
   data = load_db()
   data["dir"][new_dir_id] = {"name": name, "ext": []}
   save_db(data)
