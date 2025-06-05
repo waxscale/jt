@@ -36,7 +36,7 @@ case "$COMMAND" in
     ;;
   tags)
     if [ $# -lt 1 ]; then
-      echo "Usage: jt tags {add|rm|list|rename|mv} [args...]" >&2
+      echo "Usage: jt tags {add|rm|list|rename|mv|cd} [args...]" >&2
       exit 1
     fi
     TAG_SUB="$1"
@@ -57,8 +57,11 @@ case "$COMMAND" in
       mv)
         exec python3 "$SCRIPT_DIR/../src/jt-tags-mv.py" "$@"
         ;;
+      cd)
+        exec python3 "$SCRIPT_DIR/../src/jt-tags-cd.py" "$@"
+        ;;
       *)
-        echo "Unknown jt tags command: $TAG_SUB. Use one of: add, rm, list, rename, mv." >&2
+        echo "Unknown jt tags command: $TAG_SUB. Use one of: add, rm, list, rename, mv, cd." >&2
         exit 1
         ;;
     esac
