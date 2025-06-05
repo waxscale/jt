@@ -14,25 +14,25 @@ shift
 
 case "$COMMAND" in
   add)
-    exec python3 "$SCRIPT_DIR/jt-add.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-add.py" "$@"
     ;;
   ls)
-    exec python3 "$SCRIPT_DIR/jt-ls.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-ls.py" "$@"
     ;;
   rm)
-    exec python3 "$SCRIPT_DIR/jt-rm.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-rm.py" "$@"
     ;;
   rename)
-    exec python3 "$SCRIPT_DIR/jt-rename.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-rename.py" "$@"
     ;;
   nav)
-    exec python3 "$SCRIPT_DIR/jt-nav.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-nav.py" "$@"
     ;;
   box)
-    exec python3 "$SCRIPT_DIR/jt-box.py"
+    exec python3 "$SCRIPT_DIR/../src/jt-box.py"
     ;;
   append)
-    exec python3 "$SCRIPT_DIR/jt-append.py"
+    exec python3 "$SCRIPT_DIR/../src/jt-append.py"
     ;;
   tags)
     exec "$SCRIPT_DIR/jt-tags" "$@"
