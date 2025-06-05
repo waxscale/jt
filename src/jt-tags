@@ -8,24 +8,25 @@ if [ $# -lt 1 ]; then
   exit 1
 fi
 
+SCRIPT_DIR="$(dirname "$0")"
 SUB="$1"
 shift
 
 case "$SUB" in
   add)
-    exec jt-tags-add "$@"
+    exec python3 "$SCRIPT_DIR/jt-tags-add.py" "$@"
     ;;
   rm)
-    exec jt-tags-rm "$@"
+    exec python3 "$SCRIPT_DIR/jt-tags-rm.py" "$@"
     ;;
   list)
-    exec jt-tags-list "$@"
+    exec python3 "$SCRIPT_DIR/jt-tags-list.py" "$@"
     ;;
   rename)
-    exec jt-tags-rename "$@"
+    exec python3 "$SCRIPT_DIR/jt-tags-rename.py" "$@"
     ;;
   mv)
-    exec jt-tags-mv "$@"
+    exec python3 "$SCRIPT_DIR/jt-tags-mv.py" "$@"
     ;;
   *)
     echo "Unknown jt-tags command: $SUB. Use one of: add, rm, list, rename, mv." >&2
