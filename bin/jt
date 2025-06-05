@@ -34,14 +34,14 @@ case "$COMMAND" in
   append)
     exec python3 "$SCRIPT_DIR/../src/jt-append.py"
     ;;
-  tags)
-    if [ $# -lt 1 ]; then
-      echo "Usage: jt tags {add|rm|list|rename|mv} [args...]" >&2
-      exit 1
-    fi
-    TAG_SUB="$1"
-    shift
-    case "$TAG_SUB" in
+    tags)
+      if [ $# -lt 1 ]; then
+        echo "Usage: jt tags {add|rm|list|rename|mv|cd} [args...]" >&2
+        exit 1
+      fi
+      TAG_SUB="$1"
+      shift
+      case "$TAG_SUB" in
       add)
         exec python3 "$SCRIPT_DIR/../src/jt-tags-add.py" "$@"
         ;;
@@ -54,14 +54,17 @@ case "$COMMAND" in
       rename)
         exec python3 "$SCRIPT_DIR/../src/jt-tags-rename.py" "$@"
         ;;
-      mv)
-        exec python3 "$SCRIPT_DIR/../src/jt-tags-mv.py" "$@"
-        ;;
-      *)
-        echo "Unknown jt tags command: $TAG_SUB. Use one of: add, rm, list, rename, mv." >&2
-        exit 1
-        ;;
-    esac
+        mv)
+          exec python3 "$SCRIPT_DIR/../src/jt-tags-mv.py" "$@"
+          ;;
+        cd)
+          exec python3 "$SCRIPT_DIR/../src/jt-tags-cd.py" "$@"
+          ;;
+        *)
+          echo "Unknown jt tags command: $TAG_SUB. Use one of: add, rm, list, rename, mv, cd." >&2
+          exit 1
+          ;;
+      esac
     ;;
   *)
     echo "Unknown command: $COMMAND. Use one of: add, ls, rm, rename, nav, box, append, tags." >&2
