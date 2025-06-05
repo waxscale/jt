@@ -18,88 +18,88 @@ ICON_DIR = "\uf07b"   # \uf73b
 RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 
 def load_vault_path():
-    vault = DEFAULT_VAULT
-    try:
-        with open(CONF_PATH, "r") as cf:
-            for line in cf:
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                if "=" in line:
-                    key, val = line.split("=", 1)
-                    key, val = key.strip(), val.strip()
-                    if key == "vault" and val:
-                        vault = val.rstrip("/")
-    except FileNotFoundError:
-        pass
-    return vault
+  vault = DEFAULT_VAULT
+  try:
+    with open(CONF_PATH, "r") as cf:
+      for line in cf:
+        line = line.strip()
+        if not line or line.startswith("#"):
+          continue
+        if "=" in line:
+          key, val = line.split("=", 1)
+          key, val = key.strip(), val.strip()
+          if key == "vault" and val:
+            vault = val.rstrip("/")
+  except FileNotFoundError:
+    pass
+  return vault
 
 VAULT_PATH = load_vault_path()
 
 def load_db():
-    default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
-    if not os.path.exists(DB_PATH):
-        os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
-        with open(DB_PATH, "w") as f:
-            json.dump(default, f, indent=2)
-        return default
-    with open(DB_PATH, "r") as f:
-        try:
-            data = json.load(f)
-        except json.JSONDecodeError:
-            data = default
-    for k in ("ac", "id", "ext", "dir"):
-        if k not in data:
-            data[k] = {}
-    return data
+  default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
+  if not os.path.exists(DB_PATH):
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    with open(DB_PATH, "w") as f:
+      json.dump(default, f, indent=2)
+    return default
+  with open(DB_PATH, "r") as f:
+    try:
+      data = json.load(f)
+    except json.JSONDecodeError:
+      data = default
+  for k in ("ac", "id", "ext", "dir"):
+    if k not in data:
+      data[k] = {}
+  return data
 
 def save_db(data):
-    with open(DB_PATH, "w") as f:
-        json.dump(data, f, indent=2)
+  with open(DB_PATH, "w") as f:
+    json.dump(data, f, indent=2)
 
 def main():
-    if len(sys.argv) != 2:
-        print(f"{COLOR_ERR}Usage: jt-rename <NEW_DIR_NAME>{COLOR_RESET}", file=sys.stderr)
-        sys.exit(1)
+  if len(sys.argv) != 2:
+    print(f"{COLOR_ERR}Usage: jt-rename <NEW_DIR_NAME>{COLOR_RESET}", file=sys.stderr)
+    sys.exit(1)
 
-    new_name = sys.argv[1].strip()
+  new_name = sys.argv[1].strip()
 
-    vault = VAULT_PATH
-    cwd = os.getcwd()
-    vault_prefix = vault + os.sep
-    if not cwd.startswith(vault_prefix):
-        print(f"{COLOR_ERR}Error: Not inside vault ({vault}).{COLOR_RESET}", file=sys.stderr)
-        sys.exit(1)
+  vault = VAULT_PATH
+  cwd = os.getcwd()
+  vault_prefix = vault + os.sep
+  if not cwd.startswith(vault_prefix):
+    print(f"{COLOR_ERR}Error: Not inside vault ({vault}).{COLOR_RESET}", file=sys.stderr)
+    sys.exit(1)
 
-    dir_id = cwd[len(vault_prefix):]
-    if not RE_DIR_ID.match(dir_id):
-        print(
-            f"{COLOR_ERR}Error: Current directory '{cwd}' is not in 'vault/XXXX_XXXX_XXXX_XXXX' format.{COLOR_RESET}",
-            file=sys.stderr
-        )
-        sys.exit(1)
-
-    data = load_db()
-
-    # If no entry exists, create one with empty ext list
-    if dir_id not in data["dir"]:
-        data["dir"][dir_id] = {"name": new_name, "ext": []}
-        dir_entry = data["dir"][dir_id]
-        old_name = ""
-    else:
-        dir_entry = data["dir"][dir_id]
-        old_name = dir_entry.get("name", "")
-        dir_entry["name"] = new_name
-
-    save_db(data)
-
-    display_old = old_name if old_name else dir_id
-    display_new = new_name if new_name else dir_id
-
+  dir_id = cwd[len(vault_prefix):]
+  if not RE_DIR_ID.match(dir_id):
     print(
-        f"{COLOR_OK}{ICON_DIR} Renamed dir '{display_old}' \u2192 '{display_new}'{COLOR_RESET}"
+      f"{COLOR_ERR}Error: Current directory '{cwd}' is not in 'vault/XXXX_XXXX_XXXX_XXXX' format.{COLOR_RESET}",
+      file=sys.stderr
     )
+    sys.exit(1)
+
+  data = load_db()
+
+  # If no entry exists, create one with empty ext list
+  if dir_id not in data["dir"]:
+    data["dir"][dir_id] = {"name": new_name, "ext": []}
+    dir_entry = data["dir"][dir_id]
+    old_name = ""
+  else:
+    dir_entry = data["dir"][dir_id]
+    old_name = dir_entry.get("name", "")
+    dir_entry["name"] = new_name
+
+  save_db(data)
+
+  display_old = old_name if old_name else dir_id
+  display_new = new_name if new_name else dir_id
+
+  print(
+    f"{COLOR_OK}{ICON_DIR} Renamed dir '{display_old}' \u2192 '{display_new}'{COLOR_RESET}"
+  )
 
 if __name__ == "__main__":
-    main()
+  main()
 
