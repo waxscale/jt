@@ -121,7 +121,7 @@ def main():
         args = args[1:]
 
     if len(args) > 1:
-        print("Usage: jt-tags-list [-a|--all] [AC | AC.ID | AC.ID+EXT]", file=sys.stderr)
+        print("Usage: jt tags list [-a|--all] [AC | AC.ID | AC.ID+EXT]", file=sys.stderr)
         sys.exit(1)
 
     if not args:

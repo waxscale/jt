@@ -83,7 +83,7 @@ def rm_ext(ext_tag):
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: jt-tags-rm <AC | AC.ID | AC.ID+EXT>", file=sys.stderr)
+        print("Usage: jt tags rm <AC | AC.ID | AC.ID+EXT>", file=sys.stderr)
         sys.exit(1)
     token = sys.argv[1].strip()
     if RE_AC.match(token):

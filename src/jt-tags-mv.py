@@ -156,7 +156,7 @@ def mv_ext(old_ext, new_ext, data):
 def main():
     if len(sys.argv) != 3:
         print(
-            "Usage: jt-tags-mv <old-fragment> <new-fragment>",
+            "Usage: jt tags mv <old-fragment> <new-fragment>",
             file=sys.stderr
         )
         sys.exit(1)
