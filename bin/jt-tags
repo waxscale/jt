@@ -14,19 +14,19 @@ shift
 
 case "$SUB" in
   add)
-    exec python3 "$SCRIPT_DIR/jt-tags-add.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-tags-add.py" "$@"
     ;;
   rm)
-    exec python3 "$SCRIPT_DIR/jt-tags-rm.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-tags-rm.py" "$@"
     ;;
   list)
-    exec python3 "$SCRIPT_DIR/jt-tags-list.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-tags-list.py" "$@"
     ;;
   rename)
-    exec python3 "$SCRIPT_DIR/jt-tags-rename.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-tags-rename.py" "$@"
     ;;
   mv)
-    exec python3 "$SCRIPT_DIR/jt-tags-mv.py" "$@"
+    exec python3 "$SCRIPT_DIR/../src/jt-tags-mv.py" "$@"
     ;;
   *)
     echo "Unknown jt-tags command: $SUB. Use one of: add, rm, list, rename, mv." >&2
