@@ -2,23 +2,14 @@ import os
 import sys
 import json
 import re
+import jtconf
 
-DB_PATH     = os.path.expanduser("~/.cache/jdex/jt.json")
-
-COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"
-COLOR_ID    = "\033[38;5;107m"
-COLOR_EXT   = "\033[38;5;175m"
-COLOR_DIR   = "\033[38;5;141m"
-
-ICON_TAG   = "\uf02b"
-ICON_DIR   = "\uf07b"
+DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 RE_AC     = re.compile(r"^[0-9]{2}$")
 RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
 RE_EXT    = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
 
-LEFT_ARROW = f"{COLOR_EXT}\u2190{COLOR_RESET}"
 
 def load_db():
   default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
@@ -60,7 +51,7 @@ def main():
       sys.exit(1)
     data["ac"][ac_id]["name"] = new_name
     save_db(data)
-    print(f"{COLOR_AC}{ICON_TAG} [{ac_id}] {new_name}{COLOR_RESET}")
+    print(f"{jtconf.CONFIG['color_ac']}{jtconf.CONFIG['icon_tag']} [{ac_id}] {new_name}{jtconf.CONFIG['color_reset']}")
     return
 
   if RE_ID.match(fragment):
@@ -70,7 +61,7 @@ def main():
       sys.exit(1)
     data["id"][id_tag]["name"] = new_name
     save_db(data)
-    print(f"{COLOR_ID}{ICON_TAG} [{id_tag}] {new_name}{COLOR_RESET}")
+    print(f"{jtconf.CONFIG['color_id']}{jtconf.CONFIG['icon_tag']} [{id_tag}] {new_name}{jtconf.CONFIG['color_reset']}")
     return
 
   if RE_EXT.match(fragment):
@@ -86,11 +77,11 @@ def main():
     if dirs:
       for dir_id in dirs:
         print(
-          f"{COLOR_DIR}{ICON_DIR} {dir_id} {LEFT_ARROW} "
-          f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {new_name}{COLOR_RESET}"
+          f"{jtconf.CONFIG['color_dir']}{jtconf.CONFIG['icon_dir']} {dir_id} {jtconf.CONFIG['color_ext']}\u2190{jtconf.CONFIG['color_reset']} "
+          f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{ext_tag}] {new_name}{jtconf.CONFIG['color_reset']}"
         )
     else:
-      print(f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {new_name}{COLOR_RESET}")
+      print(f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{ext_tag}] {new_name}{jtconf.CONFIG['color_reset']}")
     return
 
   print(

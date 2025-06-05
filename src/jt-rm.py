@@ -3,39 +3,12 @@ import sys
 import json
 import re
 import subprocess
+import jtconf
 
-DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
-CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
-DEFAULT_VAULT = "/mnt/nas"
-
-COLOR_RESET = "\033[0m"
-COLOR_EXT   = "\033[38;5;175m"
-COLOR_DIR   = "\033[38;5;141m"
-
-ICON_TAG = "\uf02b"
-ICON_DIR = "\uf07b"
+DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 RE_DIR_ID  = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
 RE_EXT     = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
-
-def load_vault_path():
-  vault = DEFAULT_VAULT
-  try:
-    with open(CONF_PATH, "r") as cf:
-      for line in cf:
-        line = line.strip()
-        if not line or line.startswith("#"):
-          continue
-        if "=" in line:
-          key, val = line.split("=", 1)
-          key, val = key.strip(), val.strip()
-          if key == "vault" and val:
-            vault = val.rstrip("/")
-  except FileNotFoundError:
-    pass
-  return vault
-
-VAULT_PATH = load_vault_path()
 
 def load_db():
   default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
@@ -94,9 +67,12 @@ def extract_token(line):
 
 def main():
   cwd = os.getcwd()
-  vault_prefix = VAULT_PATH + os.sep
+  vault_prefix = jtconf.CONFIG['vault'] + os.sep
   if not cwd.startswith(vault_prefix):
-    print(f"Error: Not inside vault directory ({VAULT_PATH}).", file=sys.stderr)
+    print(
+      f"Error: Not inside vault directory ({jtconf.CONFIG['vault']}).",
+      file=sys.stderr,
+    )
     sys.exit(1)
 
   dir_id = cwd[len(vault_prefix):]
@@ -137,8 +113,8 @@ def main():
   name = ext_info.get("name", "")
   dir_name = data.get("dir", {}).get(dir_id, {}).get("name", "")
   print(
-    f"{COLOR_EXT}{ICON_TAG} [{token}] {name} removed from "
-    f"{COLOR_DIR}{ICON_DIR} {dir_id} {dir_name}{COLOR_RESET}"
+    f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{token}] {name} removed from "
+    f"{jtconf.CONFIG['color_dir']}{jtconf.CONFIG['icon_dir']} {dir_id} {dir_name}{jtconf.CONFIG['color_reset']}"
   )
   sys.exit(0)
 

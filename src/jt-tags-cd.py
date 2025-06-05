@@ -2,29 +2,11 @@ import os
 import sys
 import json
 import re
+import jtconf
 
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
-CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
-DEFAULT_VAULT = "/mnt/nas"
 
 RE_EXT = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
-
-def load_vault_path():
-  vault = DEFAULT_VAULT
-  try:
-    with open(CONF_PATH, "r") as cf:
-      for line in cf:
-        line = line.strip()
-        if not line or line.startswith("#"):
-          continue
-        if "=" in line:
-          key, val = line.split("=", 1)
-          key, val = key.strip(), val.strip()
-          if key == "vault" and val:
-            vault = val.rstrip("/")
-  except FileNotFoundError:
-    pass
-  return vault
 
 def main():
   if len(sys.argv) != 2:
@@ -65,7 +47,7 @@ def main():
     print(f"Error: EXT '{token}' has no directory associated.", file=sys.stderr)
     sys.exit(1)
 
-  vault = load_vault_path()
+  vault = jtconf.CONFIG['vault']
   print(os.path.join(vault, dir_id))
 
 if __name__ == "__main__":

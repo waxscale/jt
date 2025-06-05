@@ -2,38 +2,11 @@ import os
 import sys
 import json
 import re
+import jtconf
 
-DB_PATH   = os.path.expanduser("~/.cache/jdex/jt.json")
-CONF_PATH = os.path.expanduser("~/.config/jdex/jt.conf")
-DEFAULT_VAULT = "/mnt/nas"
-
-COLOR_RESET = "\033[0m"
-COLOR_DIR   = "\033[38;5;141m"
-COLOR_OK    = "\033[38;5;107m"
-COLOR_ERR   = "\033[38;5;196m"
-
-ICON_DIR = "\uf07b"
+DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
 
 RE_DIR_ID = re.compile(r"^[0-9]{4}(?:_[0-9]{4}){3}$")
-
-def load_vault_path():
-  vault = DEFAULT_VAULT
-  try:
-    with open(CONF_PATH, "r") as cf:
-      for line in cf:
-        line = line.strip()
-        if not line or line.startswith("#"):
-          continue
-        if "=" in line:
-          key, val = line.split("=", 1)
-          key, val = key.strip(), val.strip()
-          if key == "vault" and val:
-            vault = val.rstrip("/")
-  except FileNotFoundError:
-    pass
-  return vault
-
-VAULT_PATH = load_vault_path()
 
 def load_db():
   default = {"ac": {}, "id": {}, "ext": {}, "dir": {}}
@@ -58,22 +31,28 @@ def save_db(data):
 
 def main():
   if len(sys.argv) != 2:
-    print(f"{COLOR_ERR}Usage: jt-rename <NEW_DIR_NAME>{COLOR_RESET}", file=sys.stderr)
+    print(
+      f"{jtconf.CONFIG['color_err']}Usage: jt-rename <NEW_DIR_NAME>{jtconf.CONFIG['color_reset']}",
+      file=sys.stderr,
+    )
     sys.exit(1)
 
   new_name = sys.argv[1].strip()
 
-  vault = VAULT_PATH
+  vault = jtconf.CONFIG['vault']
   cwd = os.getcwd()
   vault_prefix = vault + os.sep
   if not cwd.startswith(vault_prefix):
-    print(f"{COLOR_ERR}Error: Not inside vault ({vault}).{COLOR_RESET}", file=sys.stderr)
+    print(
+      f"{jtconf.CONFIG['color_err']}Error: Not inside vault ({vault}).{jtconf.CONFIG['color_reset']}",
+      file=sys.stderr,
+    )
     sys.exit(1)
 
   dir_id = cwd[len(vault_prefix):]
   if not RE_DIR_ID.match(dir_id):
     print(
-      f"{COLOR_ERR}Error: Current directory '{cwd}' is not in 'vault/XXXX_XXXX_XXXX_XXXX' format.{COLOR_RESET}",
+      f"{jtconf.CONFIG['color_err']}Error: Current directory '{cwd}' is not in 'vault/XXXX_XXXX_XXXX_XXXX' format.{jtconf.CONFIG['color_reset']}",
       file=sys.stderr
     )
     sys.exit(1)
@@ -95,7 +74,7 @@ def main():
   display_new = new_name if new_name else dir_id
 
   print(
-    f"{COLOR_OK}{ICON_DIR} Renamed dir '{display_old}' \u2192 '{display_new}'{COLOR_RESET}"
+    f"{jtconf.CONFIG['color_ok']}{jtconf.CONFIG['icon_dir']} Renamed dir '{display_old}' \u2192 '{display_new}'{jtconf.CONFIG['color_reset']}"
   )
 
 if __name__ == "__main__":

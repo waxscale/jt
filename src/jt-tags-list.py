@@ -2,19 +2,9 @@ import os
 import sys
 import json
 import re
+import jtconf
 
 DB_PATH = os.path.expanduser("~/.cache/jdex/jt.json")
-
-COLOR_RESET = "\033[0m"
-COLOR_AC    = "\033[38;5;75m"
-COLOR_ID    = "\033[38;5;107m"
-COLOR_EXT   = "\033[38;5;175m"
-COLOR_DIR   = "\033[38;5;141m"
-
-ICON_TAG  = "\uf02b"
-ICON_DIR  = "\uf07b"
-LEFT_ARROW = f"{COLOR_EXT}\u2190{COLOR_RESET}"
-
 RE_AC     = re.compile(r"^[0-9]{2}$")
 RE_ID     = re.compile(r"^[0-9]{2}\.[0-9]{2}$")
 RE_EXT    = re.compile(r"^[0-9]{2}\.[0-9]{2}\+[0-9]{4}$")
@@ -39,16 +29,16 @@ def load_db():
 
 def print_ac(ac_id, data, indent=0):
   name = data["ac"][ac_id]["name"]
-  print(" " * indent + f"{COLOR_AC}{ICON_TAG} [{ac_id}] {name}{COLOR_RESET}")
+  print(" " * indent + f"{jtconf.CONFIG['color_ac']}{jtconf.CONFIG['icon_tag']} [{ac_id}] {name}{jtconf.CONFIG['color_reset']}")
 
 def print_id(id_tag, data, indent=2):
   name = data["id"][id_tag]["name"]
-  print(" " * indent + f"{COLOR_ID}{ICON_TAG} [{id_tag}] {name}{COLOR_RESET}")
+  print(" " * indent + f"{jtconf.CONFIG['color_id']}{jtconf.CONFIG['icon_tag']} [{id_tag}] {name}{jtconf.CONFIG['color_reset']}")
 
 def print_ext(ext_tag, data, indent=4, show_dir=False):
   ext_info = data["ext"][ext_tag]
   name     = ext_info["name"]
-  print(" " * indent + f"{COLOR_EXT}{ICON_TAG} [{ext_tag}] {name}{COLOR_RESET}")
+  print(" " * indent + f"{jtconf.CONFIG['color_ext']}{jtconf.CONFIG['icon_tag']} [{ext_tag}] {name}{jtconf.CONFIG['color_reset']}")
   if show_dir:
 
     dirs_list = ext_info.get("dirs", [])
@@ -61,7 +51,7 @@ def print_ext(ext_tag, data, indent=4, show_dir=False):
     dir_entries.sort(key=lambda x: x[1].lower())
     for dir_id, dir_name in dir_entries:
       print(" " * (indent + 2) +
-          f"{COLOR_DIR}{ICON_DIR} [{dir_id}] {dir_name}{COLOR_RESET}")
+          f"{jtconf.CONFIG['color_dir']}{jtconf.CONFIG['icon_dir']} [{dir_id}] {dir_name}{jtconf.CONFIG['color_reset']}")
 
 def list_all_ac(data):
   if not data["ac"]:
